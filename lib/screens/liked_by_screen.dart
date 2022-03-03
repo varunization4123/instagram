@@ -23,7 +23,7 @@ class LikedBy extends StatelessWidget {
           leading: GestureDetector(
             onTap: (() => Navigator.pop(context)),
             child: const Icon(
-              Icons.arrow_back,
+              Icons.backpack,
               color: primaryColor,
             ),
           ),
