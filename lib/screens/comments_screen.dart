@@ -52,7 +52,7 @@ class _CommentScreenState extends State<CommentScreen> {
 
       _commentController.clear();
 
-      if (res != 'sucess') {
+      if (res != 'success') {
         showSnackBar(content: 'something went wrong', context: context);
       }
     } catch (e) {
@@ -112,20 +112,22 @@ class _CommentScreenState extends State<CommentScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            RichText(
-                              text: TextSpan(
-                                style: const TextStyle(color: primaryColor),
-                                children: [
-                                  TextSpan(
-                                    text: widget.username,
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  const TextSpan(text: '  '),
-                                  TextSpan(
-                                    text: widget.description,
-                                  ),
-                                ],
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.7,
+                              child: RichText(
+                                text: TextSpan(
+                                    style: const TextStyle(color: primaryColor),
+                                    children: [
+                                      TextSpan(
+                                        text: widget.username,
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      const TextSpan(text: '  '),
+                                      TextSpan(
+                                        text: widget.description,
+                                      ),
+                                    ]),
                               ),
                             ),
                             const SizedBox(
