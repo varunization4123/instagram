@@ -3,6 +3,7 @@
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:instagram/models/comments.dart';
 import 'package:instagram/models/post.dart';
 import 'package:instagram/resources/storage_methods.dart';
 import 'package:uuid/uuid.dart';
@@ -61,5 +62,41 @@ class FirestoreMethods {
     } catch (e) {
       print(e.toString());
     }
+  }
+
+  Future<String> commentOnPost(
+    String comment,
+    String uid,
+    String postId,
+    String username,
+    String profileImage,
+    likes,
+  ) async {
+    String res = 'Something went wrong';
+    try {
+      String commentId = const Uuid().v1();
+      Comments comments = Comments(
+        comment: comment,
+        uid: uid,
+        username: username,
+        datePublished: DateTime.now(),
+        profileImage: profileImage,
+        likes: [],
+      );
+
+      await _firestore
+          .collection('posts')
+          .doc(postId)
+          .collection('comments')
+          .doc(commentId)
+          .set(comments.toJason());
+
+      res = 'success';
+    } catch (e) {
+      res = e.toString();
+      print(e.toString());
+    }
+
+    return res;
   }
 }

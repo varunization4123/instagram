@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:instagram/models/user.dart';
 import 'package:instagram/providers/user_provider.dart';
 import 'package:instagram/resources/firestore_methods.dart';
+import 'package:instagram/screens/comments_screen.dart';
 import 'package:instagram/screens/liked_by_screen.dart';
 import 'package:instagram/utils/colors.dart';
 import 'package:instagram/widgets/like_animation.dart';
@@ -24,6 +25,7 @@ class PostCard extends StatefulWidget {
 class _PostCardState extends State<PostCard> {
   bool isLikeAnimating = false;
   bool smallLikePressed = false;
+  bool savePostPressed = false;
 
   @override
   Widget build(BuildContext context) {
@@ -152,7 +154,19 @@ class _PostCardState extends State<PostCard> {
               ),
               BottomIcon(
                 icon: Icons.chat_bubble_outline,
-                onTap: (() {}),
+                onTap: (() {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CommentScreen(
+                        postId: postId,
+                        user: profileImage,
+                        description: description,
+                        username: username,
+                      ),
+                    ),
+                  );
+                }),
               ),
               BottomIcon(
                 icon: Icons.send_outlined,
@@ -162,15 +176,21 @@ class _PostCardState extends State<PostCard> {
                 child: Align(
                   alignment: Alignment.bottomRight,
                   child: BottomIcon(
-                    icon: Icons.bookmark_border,
-                    onTap: (() {}),
+                    icon: savePostPressed
+                        ? Icons.bookmark_rounded
+                        : Icons.bookmark_border_rounded,
+                    onTap: (() {
+                      setState(() {
+                        savePostPressed = true;
+                      });
+                    }),
                   ),
                 ),
               ),
             ],
           ),
 
-          // Likes
+          // No. of Likes
           InkWell(
             onTap: () {
               Navigator.push(
@@ -183,7 +203,7 @@ class _PostCardState extends State<PostCard> {
                           )));
             },
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Text('${likes.length} likes'),
             ),
           ),
@@ -192,7 +212,7 @@ class _PostCardState extends State<PostCard> {
           Container(
             width: double.infinity,
             padding:
-                const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
+                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
             child: RichText(
               text: TextSpan(
                   style: const TextStyle(color: primaryColor),
@@ -211,7 +231,7 @@ class _PostCardState extends State<PostCard> {
 
           // Date
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Text(
               DateFormat.yMMMd().format(
                 timestamp.toDate(),
