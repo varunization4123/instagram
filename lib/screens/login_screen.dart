@@ -5,6 +5,7 @@ import 'package:instagram/responsive/mobile_screen_layout.dart';
 import 'package:instagram/responsive/responsive_layout_screen.dart';
 import 'package:instagram/responsive/web_screen_layout.dart';
 import 'package:instagram/screens/sign_up_screen.dart';
+import 'package:instagram/utils/global_variables.dart';
 import 'package:instagram/utils/utils.dart';
 import 'package:instagram/widgets/text_field_input.dart';
 
@@ -57,7 +58,10 @@ class _LoginScreenState extends State<LoginScreen> {
     return SafeArea(
       child: Scaffold(
         body: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 36),
+          padding: MediaQuery.of(context).size.width > webScreenSize
+              ? EdgeInsets.symmetric(
+                  horizontal: MediaQuery.of(context).size.width / 3)
+              : const EdgeInsets.symmetric(horizontal: 36),
           width: double.infinity,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,

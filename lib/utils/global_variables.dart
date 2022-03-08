@@ -14,7 +14,10 @@ List<Widget> homeScreenItems = [
   const AddPostScreen(),
   // const ActivityScreen(),
   const Page(page: 'Activity'),
-  ProfileScreen(uid: FirebaseAuth.instance.currentUser!.uid),
+  ProfileScreen(
+    uid: FirebaseAuth.instance.currentUser!.uid,
+    isNotPrimaryUser: false,
+  ),
 ];
 
 class Page extends StatelessWidget {

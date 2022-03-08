@@ -85,4 +85,17 @@ class AuthMethods {
     }
     return res;
   }
+
+  // Sign Out user
+  Future<String> signOutUser() async {
+    String res = 'Something went wrong';
+    try {
+      await _auth.signOut();
+      res = 'success';
+    } catch (e) {
+      res = e.toString();
+      print(e);
+    }
+    return res;
+  }
 }

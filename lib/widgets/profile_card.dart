@@ -3,13 +3,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram/models/user.dart';
 import 'package:instagram/providers/user_provider.dart';
+import 'package:instagram/resources/auth_methods.dart';
+import 'package:instagram/screens/login_screen.dart';
 import 'package:instagram/utils/colors.dart';
 import 'package:instagram/widgets/search_card.dart';
 import 'package:provider/provider.dart';
 
 class ProfileCard extends StatefulWidget {
   String uid;
-  String? presentUser;
+  String? presentUserUid;
   bool isNotPrimaryUser;
   ProfileCard({Key? key, required this.uid, required this.isNotPrimaryUser})
       : super(key: key);
@@ -27,6 +29,7 @@ class _ProfileCardState extends State<ProfileCard> {
   late int followers;
   late List followersList = [];
   late final int following;
+  late final int postLength;
   Map<String, dynamic> userData = {};
   bool isLoading = true;
 
@@ -51,6 +54,11 @@ class _ProfileCardState extends State<ProfileCard> {
       followers = followersList.length;
       List followingList = snap.data()!['following'];
       following = followingList.length;
+      var secondSnap = await FirebaseFirestore.instance
+          .collection('posts')
+          .where('uid', isEqualTo: widget.uid)
+          .get();
+      postLength = secondSnap.docs.length;
       setState(() {
         isLoading = false;
       });
@@ -61,7 +69,7 @@ class _ProfileCardState extends State<ProfileCard> {
 
   void checkIfFollowing() async {
     for (var follower in followersList) {
-      if (follower == widget.presentUser) {
+      if (follower == widget.presentUserUid) {
         setState(() {
           isFollowing = true;
         });
@@ -80,10 +88,20 @@ class _ProfileCardState extends State<ProfileCard> {
           .collection('users')
           .doc(widget.uid)
           .update({
-        'followers': FieldValue.arrayUnion([widget.presentUser])
+        'followers': FieldValue.arrayUnion([widget.presentUserUid])
+      });
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.presentUserUid)
+          .update({
+        'following': FieldValue.arrayUnion([widget.uid])
+      });
+      print(followers);
+      setState(() {
+        followers++;
       });
 
-      followers--;
+      print(followers);
       result = 'Success';
     } catch (e) {
       result = e.toString();
@@ -99,9 +117,21 @@ class _ProfileCardState extends State<ProfileCard> {
           .collection('users')
           .doc(widget.uid)
           .update({
-        'followers': FieldValue.arrayRemove([widget.presentUser])
+        'followers': FieldValue.arrayRemove([widget.presentUserUid])
       });
-      followers--;
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.presentUserUid)
+          .update({
+        'following': FieldValue.arrayRemove([widget.uid])
+      });
+      print('removing follower');
+      print('current followers: $followers');
+      setState(() {
+        followers--;
+      });
+
+      print('new followers: $followers');
 
       result = 'Success';
     } catch (e) {
@@ -113,12 +143,40 @@ class _ProfileCardState extends State<ProfileCard> {
 
   @override
   Widget build(BuildContext context) {
-    widget.presentUser = FirebaseAuth.instance.currentUser!.uid;
+    widget.presentUserUid = FirebaseAuth.instance.currentUser!.uid;
+    checkIfFollowing();
     return isLoading
         ? const Center(
             child: CircularProgressIndicator(),
           )
         : Scaffold(
+            endDrawer: widget.isNotPrimaryUser
+                ? null
+                : Drawer(
+                    backgroundColor: mobileBackgroundColor,
+                    child: ListView(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: TextButton(
+                            onPressed: () {
+                              AuthMethods().signOutUser();
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => LoginScreen()));
+                            },
+                            child: const Text(
+                              'Sign Out',
+                              style: TextStyle(
+                                color: primaryColor,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
             appBar: AppBar(
               // leading: const Icon(Icons.arrow_back_ios_new_rounded),
               backgroundColor: mobileBackgroundColor,
@@ -141,8 +199,8 @@ class _ProfileCardState extends State<ProfileCard> {
                               backgroundImage: NetworkImage(photoUrl),
                             ),
                             const SizedBox(width: 20.0),
-                            const UserData(
-                              numberOfItems: '0',
+                            UserData(
+                              numberOfItems: '$postLength',
                               item: 'Posts',
                             ),
                             UserData(
@@ -180,6 +238,10 @@ class _ProfileCardState extends State<ProfileCard> {
                                         child: OutlinedButton(
                                           onPressed: () {
                                             removeAsFollower();
+                                            print('removed follower');
+                                            setState(() {
+                                              isFollowing = false;
+                                            });
                                           },
                                           child: const Text(
                                             'Following',
@@ -209,6 +271,10 @@ class _ProfileCardState extends State<ProfileCard> {
                                         child: ElevatedButton(
                                           onPressed: () {
                                             addAsFollower();
+                                            print('added follower');
+                                            setState(() {
+                                              isFollowing = true;
+                                            });
                                           },
                                           child: const Text('Follow'),
                                         ),
@@ -217,23 +283,45 @@ class _ProfileCardState extends State<ProfileCard> {
                                   )
                             : Column(
                                 children: [
-                                  OutlinedButton(
-                                      onPressed: () {},
-                                      child: const Text('Edit Profile')),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: OutlinedButton(
+                                            onPressed: () {},
+                                            child: const Text(
+                                              'Edit Profile',
+                                              style: TextStyle(
+                                                  color: primaryColor),
+                                            )),
+                                      ),
+                                    ],
+                                  ),
                                   const SizedBox(
                                     height: 5.0,
                                   ),
                                   Row(
                                     children: [
-                                      OutlinedButton(
-                                          onPressed: () {},
-                                          child: const Text('Insights')),
+                                      Expanded(
+                                        child: OutlinedButton(
+                                            onPressed: () {},
+                                            child: const Text(
+                                              'Insights',
+                                              style: TextStyle(
+                                                  color: primaryColor),
+                                            )),
+                                      ),
                                       const SizedBox(
                                         width: 10,
                                       ),
-                                      OutlinedButton(
-                                          onPressed: () {},
-                                          child: const Text('Contacts')),
+                                      Expanded(
+                                        child: OutlinedButton(
+                                            onPressed: () {},
+                                            child: const Text(
+                                              'Contacts',
+                                              style: TextStyle(
+                                                  color: primaryColor),
+                                            )),
+                                      ),
                                     ],
                                   )
                                 ],

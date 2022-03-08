@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram/screens/profile_screen.dart';
 import 'package:instagram/utils/colors.dart';
+import 'package:instagram/widgets/profile_card.dart';
 import 'package:instagram/widgets/search_card.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -79,9 +80,10 @@ class _SearchScreenState extends State<SearchScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: ((context) => ProfileScreen(
+                                    builder: ((context) => ProfileCard(
                                           uid: (snapshot.data! as dynamic)
                                               .docs[index]['uid'],
+                                          isNotPrimaryUser: true,
                                         )),
                                   ),
                                 );

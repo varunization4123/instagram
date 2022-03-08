@@ -13,6 +13,7 @@ import '../responsive/mobile_screen_layout.dart';
 import '../responsive/responsive_layout_screen.dart';
 import '../responsive/web_screen_layout.dart';
 import '../utils/colors.dart';
+import '../utils/global_variables.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -83,7 +84,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return SafeArea(
       child: Scaffold(
         body: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 36),
+          padding: MediaQuery.of(context).size.width > webScreenSize
+              ? EdgeInsets.symmetric(
+                  horizontal: MediaQuery.of(context).size.width / 3)
+              : const EdgeInsets.symmetric(horizontal: 36),
           width: double.infinity,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,

@@ -7,6 +7,7 @@ import 'package:instagram/providers/user_provider.dart';
 import 'package:instagram/resources/firestore_methods.dart';
 import 'package:instagram/screens/comments_screen.dart';
 import 'package:instagram/screens/liked_by_screen.dart';
+import 'package:instagram/screens/profile_screen.dart';
 import 'package:instagram/utils/colors.dart';
 import 'package:instagram/widgets/like_animation.dart';
 import 'package:intl/intl.dart';
@@ -72,7 +73,18 @@ class _PostCardState extends State<PostCard> {
                   width: 10,
                 ),
                 Expanded(
-                  child: Text(username),
+                  child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ProfileScreen(
+                                      uid: uid,
+                                      isNotPrimaryUser:
+                                          uid == user!.uid ? false : true,
+                                    )));
+                      },
+                      child: Text(username)),
                 ),
                 IconButton(
                   onPressed: () {},
