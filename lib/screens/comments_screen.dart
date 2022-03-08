@@ -29,7 +29,6 @@ class CommentScreen extends StatefulWidget {
 
 class _CommentScreenState extends State<CommentScreen> {
   final TextEditingController _commentController = TextEditingController();
-  bool _isLoading = false;
 
   void createComment({
     required String username,
@@ -37,9 +36,6 @@ class _CommentScreenState extends State<CommentScreen> {
     required String postId,
     required String profileImage,
   }) async {
-    setState(() {
-      _isLoading = true;
-    });
     try {
       String res = await FirestoreMethods().commentOnPost(
         _commentController.text,
@@ -59,9 +55,6 @@ class _CommentScreenState extends State<CommentScreen> {
       showSnackBar(content: e.toString(), context: context);
       print(e);
     }
-    setState(() {
-      _isLoading = false;
-    });
   }
 
   @override
@@ -172,7 +165,6 @@ class _CommentScreenState extends State<CommentScreen> {
                         ));
               },
             ),
-            // const Expanded(child: SizedBox()),
           ],
         ),
       ),
